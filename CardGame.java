@@ -1,83 +1,87 @@
-package cardGame;
+// Miguel Mendoza Javier Ramirez
+//9 - 23 - 25
+// Card game with OOP
+
 
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.util.ArrayList;
 import java.util.Scanner;
 
+//Adds cardgame class
 public class CardGame {
 
-	private static ArrayList<Card> deckOfCards = new ArrayList<Card>();
-	private static ArrayList<Card> playerCards = new ArrayList<Card>();
+    private static ArrayList<Card> deckOfCards = new ArrayList<Card>();
+    private static ArrayList<Card> playerCards = new ArrayList<Card>();
 
+    public static void main(String[] args) {
+        Scanner input = null;
+        try {
+            input = new Scanner(new File("cards.txt"));
+        } catch (FileNotFoundException e) {
+            System.out.println("error");
+            e.printStackTrace();
+    
+        }
 
-	public static void main(String[] args) {
+        while (input.hasNext()) {
+            String[] fields = input.nextLine().split(",");
+            Card newCard = new Card(fields[0], fields[1].trim(),
+                    Integer.parseInt(fields[2].trim()), fields[3]);
+            deckOfCards.add(newCard);
+        }
 
-		Scanner input = null;
-		try {
-			input = new Scanner(new File("cards.txt"));
-		} catch (FileNotFoundException e) {
-			// error
-			System.out.println("error");
-			e.printStackTrace();
-		}
+        //shuffles deck
+        shuffle();
 
-		while(input.hasNext()) {
-			String[] fields  = input.nextLine().split(",");
-			//	public Card(String cardSuit, String cardName, int cardValue, String cardPicture) {
-			Card newCard = new Card(fields[0], fields[1].trim(),
-					Integer.parseInt(fields[2].trim()), fields[3]);
-			deckOfCards.add(newCard);	
-		}
+        //for(Card c: deckOfCards)
+            //System.out.println(c);
 
-		shuffle();
+        //deal the player 4 cards
+        for (int i = 0; i < 4; i++) {
+            playerCards.add(deckOfCards.remove(i));
+        }
 
-		//for(Card c: deckOfCards)
-			//System.out.println(c);
+        System.out.println("players cards");
+        for (Card c : playerCards)
+            System.out.println(c);
 
-		//deal the player 5 cards
-		for(int i = 0; i < 4; i++) {
-			playerCards.add(deckOfCards.remove(i));
-		}
-		
-		System.out.println("players cards");
-		for(Card c: playerCards)
-			System.out.println(c);
+        System.out.println("pairs is " + checkFor2Kind());
 
-		System.out.println("pairs is " + checkFor2Kind());
+    } //end main
 
-	}//end main
+   
+    public static void shuffle() {
 
-	public static void shuffle() {
+        //shuffling the cards by deleting and reinserting
+        for (int i = 0; i < deckOfCards.size(); i++) {
+            int index = (int) (Math.random()*deckOfCards.size());
+            Card c = deckOfCards.remove(index);
+            //System.out.println("c is " + c + ", index is " + index);
+            deckOfCards.add(c);
+        }
+    }
 
-		//shuffling the cards by deleting and reinserting
-		for (int i = 0; i < deckOfCards.size(); i++) {
-			int index = (int) (Math.random()*deckOfCards.size());
-			Card c = deckOfCards.remove(index);
-			//System.out.println("c is " + c + ", index is " + index);
-			deckOfCards.add(c);
-		}
-	}
+    //check for 2 of a kind in the players hand
+    public static boolean checkFor2Kind() {
 
-	//check for 2 of a kind in the players hand
-	public static boolean checkFor2Kind() {
+        int count = 0;
+        for(int i = 0; i < playerCards.size() - 1; i++) {
+            Card current = playerCards.get(i);
+            Card next = playerCards.get(i+1);
+           
+            for(int j = i+1; j < playerCards.size(); j++) {
+                next = playerCards.get(j);
+                //System.out.println(" comparing " + current);
+                //System.out.println(" to " + next);
+                if(current.equals(next))
+                    count++;
 
-		int count = 0;
-		for(int i = 0; i < playerCards.size() - 1; i++) {
-			Card current = playerCards.get(i);
-			Card next = playerCards.get(i+1);
-			
-			for(int j = i+1; j < playerCards.size(); j++) {
-				next = playerCards.get(j);
-				//System.out.println(" comparing " + current);
-				//System.out.println(" to " + next);
-				if(current.equals(next))
-					count++;
-			}//end of inner for
-			if(count == 1)
-				return true;
-
-		}//end outer for
-		return false;
-	}
+            }//end of inner for
+            if (count == 1)
+                return true;
+        }//end of outer for
+        return false;
+    }
 }//end class
+
